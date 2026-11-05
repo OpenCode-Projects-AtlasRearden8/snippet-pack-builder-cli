@@ -1,5 +1,11 @@
-__pycache__/
-*.py[cod]
-.pytest_cache/
-*.pdf
 !example/*.pdf
+*.pdf
+*.py[cod]
+*.pyc
+.env
+.env.*
+.pytest_cache/
+.venv/
+__pycache__/
+dist/*.tmp
+node_modules/
