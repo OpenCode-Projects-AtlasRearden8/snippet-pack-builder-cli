@@ -1,0 +1,98 @@
+"""Reading, writing and the starter snippet file."""
+
+from __future__ import annotations
+
+import os
+from pathlib import Path
+from .miniyaml import dumps, loads
+from .models import validate_data, Library, library_to_data
+
+__all__ = ["load_library", "save_library", "STARTER_YAML", "StarterError"]
+
+STARTER_YAML = """\
+version: 1
+packs:
+  email-starters:
+    description: Openers and sign-offs you paste into email every day
+    snippets:
+      - trigger: ":hi-first"
+        title: First-touch email opener
+        replace: |-
+          Hi {{name}},
+
+          I hope your week is going smoothly.
+          {{message}}
+      - trigger: ":hi-followup"
+        title: Follow-up opener
+        replace: |-
+          Hi {{name}},
+
+          Following up on the note below.
+          {{message}}
+        tags: [email, followup]
+      - trigger: ":sig"
+        title: Professional signature
+        replace: |-
+          Best,
+
+          Dylan Asdale
+          The Massive AI Manual - dylanasdale.github.io
+        tags: [email, signature]
+  shift-handoff:
+    description: Nursing shift-handoff phrases (education use, no patient data)
+    snippets:
+      - trigger: ":handoff-open"
+        title: Handoff opening line
+        replace: |-
+          Handoff for {{date:%A %B %d}} ({{time:%H:%M}}):
+          Unit {{unit}},
+          {{summary}}
+      - trigger: ":handoff-tasks"
+        title: Outstanding tasks line
+        replace: |-
+          Still pending:
+          - {{task1}}
+          - {{task2}}
+        notes: Keep patient identifiers out of text expanders; use unit-level phrasing.
+  support-replies:
+    description: Friendly support replies
+    snippets:
+      - trigger: ":sup-support"
+        title: Support reply opener
+        replace: |-
+          Hi there,
+
+          Thanks for writing in! {{question}} Good news: {{answer}}
+
+          If anything looks off after that, reply and I will dig back in.
+        tags: [support]
+      - trigger: ":sup-closing"
+        title: Support closing
+        replace: |-
+          Happy to help - thanks again!
+      - trigger: ":greet-choice"
+        title: Greeting picker
+        replace: "{{choice:Hi there,|Hello,|Hey,}}"
+        notes: Expand with --set choice="Hello," when you want to pick.
+  appointment-scripts:
+    description: Phone and scheduling scripts (template only)
+    snippets:
+      - trigger: ":appt-confirm"
+        title: Appointment confirmation call
+        replace: |-
+          Hi, this is {{caller}}. I am calling to confirm the appointment for {{date:%m/%d}} at {{time:%I:%M %p}}. Please call back at your convenience. Thanks!
+"""
+
+
+class StarterError(Exception):
+    """Raised when initializing over an existing file without --force."""
+
+
+def load_library(path: os.PathLike | str) -> Library:
+    """Load and validate a pack file."""
+    text = Path(path).read_text(encoding="utf-8")
+    return validate_data(loads(text))
+
+
+def save_library(library: Library, path: os.PathLike | str) -> None:
+    Path(path).write_text(dumps(library_to_data(library)), encoding="utf-8")
