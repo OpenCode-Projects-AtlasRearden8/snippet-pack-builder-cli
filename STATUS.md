@@ -1,5 +1,8 @@
 # STATUS - snippetpack
 
+Built and maintained by **Asdale Dynamics, LLC** (dylanasdale.github.io,
+*The Massive AI Manual*). MIT licensed; see `LICENSE`.
+
 Last updated: 2026-11-05
 
 ## What was built
